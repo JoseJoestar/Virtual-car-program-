@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Parcel Sandbox</title>
+    <meta charset="UTF-8" />
+    <link href = "bootstrap.css" rel = "stylesheet" type = "text/css"> 
+    <link href = "styles.css" rel = "stylesheet" type = "text/css"> 
+</head>
+
+<body>
+    <h1>Driver Dashboard</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <div id="display"></div>
+            </div>
+            <div class="col-sm-6">
+                <div id="app">
+                    <div id="turnKey">
+                        <h3>Power control</h3>
+                        <button id="turnKeyOff" type="button">Turn key Off</button>
+                        <button id="turnKeyOn" type="button">Turn key ON</button>
+                        <br />
+                        <button id="carPowerOffButton" type="button">Power Off</button>
+                        <button id="carEngineOffButton" type="button">Engine Off</button>
+                        <br />
+                        <button id="carPowerOnButton" type="button">Power ON</button>
+                        <button id="carEngineOnButton" type="button">Engine ON</button>
+                    </div>
+                    <div id="ventButtons">
+                        <h3>Vent Control</h3>
+                        <button id="headVentButton" type="button">Head</button>
+                        <button id="legVentButton" type="button">Legs</button>
+                        <button id="defrostVentButton" type="button">Defrost</button>
+                        <button id="headAndLegsVentButton" type="button">
+                            Head and Legs
+                        </button>
+                        <button id="offVentButton" type="button">Off</button>
+                    </div>
+                    <div id="wiper">
+                        <h3>Wiper Control</h3>
+                        <button id="wiperOnButton" type="button">Wiper On</button>
+                        <button id="wiperOffButton" type="button">Wiper Off</button>
+                    </div>
+
+                    <div id="A-C">
+                        <h3>A/C control</h3>
+                        <button id="A-COnButton" type="button">A/C ON</button>
+                        <button id="A-COffButton" type="button">A/C Off</button>
+                    </div>
+
+                    <div id="Heat">
+                        <h3>Heating</h3>
+                        <button id="heatOnButton" type="button">Heat On</button>
+                        <button id="heatOffButton" type="button">Heat Off</button>
+                    </div>
+
+                    <div id="Radio">
+                        <h3>Radio stations</h3>
+                        <button id="radioOnButton" type="button">Radio on</button>
+                        <button id="radioOffButton" type="button">Radio Off</button>
+                        <button id="radioVolumeUpButton" type="button">Volume +</button>
+                        <button id="radioVolumeDownButton" type="button">Volume -</button>
+                        <br />
+                        <div id = "stations"></div>
+                        <br />
+
+                        <button id="addToFavorite" type="button">Add to Fav</button>
+                        <h3>Favorites</h3>
+                        <div id="radioFavorites">
+
+                        </div>
+                    </div>
+
+                    <div id="Lights">
+                        <h3>Lights</h3>
+                        <button id="leftBlinkerButton" type="button">Left Blinker</button>
+                        <button id="rightBlinkerButton" type="button">Right Blinker</button>
+                        <button id="emergencyLightsButton" type="button">Emergency Lights</button>
+                        <button id="headlightsButton" type="button">Headlights</button>
+                    </div>
+
+                    <div id="gears">
+                        <h3>Gears</h3>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <button id="P" type="button">P</button>
+                                    </td>
+                                    <td>
+                                        <button id="N" type="button">N</button>
+                                    </td>
+                                    <td>
+                                        <button id="first" type="button">1st</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="second" type="button">2nd</button>
+                                    </td>
+                                    <td>
+                                        <button id="third" type="button">3rd</button>
+                                    </td>
+                                    <td>
+                                        <button id="fourth" type="button">4th</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="fifth" type="button">5th</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      
+
+
+        function changeStationFavButton(station){
+            
+            document.getElementById("addToFavorite").textContent = "Add " + station + " to Fav";
+        }
+
+        function assignStationEventHandler(stat, button, thisDashBoard){
+           
+            button.addEventListener("click", function(){
+                thisDashBoard.tuneStation(stat);
+                //if stations exist in favorites then hide add to favs button
+                if(thisDashBoard.anyFavStation(stat) === true){
+                    document.getElementById("addToFavorite").style.display = "none"
+                }else{
+                    document.getElementById("addToFavorite").style.display = "block"
+                //if not display add to fav button
+                 changeStationFavButton(stat);
+                
+                //onClickStation(stat)
+                }
+            })
+        }
+
+        function DashBoard() {
+            this.stations = [107.5, 96.3, 105.1, 95.7, 100.3];
+            this.favorites = [100.3];
+            this.currentStation = 107.5;
+            this.currentVolume = 5; //out of 10
+            this.power = false;
+            this.radioStatus = false;
+            this.engineStatus = false;
+            this.milesOnEngine = 0;
+            this.statusOfWiper = false;
+            this.statusOfHeat = false;
+            this.statusOfAC = false;
+            this.currentVent = "Off";
+            this.currentGear = "Park";
+
+            this.Gears = [
+                "Park",
+                "Neutral",
+                "First",
+                "Second",
+                "Third",
+                "Fourth",
+                "Fifth"
+            ];
+            this.Vents = ["Head", "Legs", "Defrost", "Head and Legs", "Off"];
+            
+            this.display = undefined;
+            this.targetFavElement = undefined;
+            this.targetStations = undefined;
+            this.printRadioStations = this.printRadioStations.bind(this);
+        }
+
+        var display = document.getElementById("display");
+
+        DashBoard.prototype.log = function (message) {
+            console.log(message);
+            var p = document.createElement("p");
+            p.textContent = message;
+            this.display.append(p);
+        };
+
+        //dashBoard.prototype.
+        DashBoard.prototype.setPower = function (powerLevel) {
+            this.power = powerLevel;
+            this.log("power is " + this.power);
+        };
+
+        DashBoard.prototype.togglePower = function () {
+            this.power = !this.power;
+            if (this.power === true) {
+                this.log("Power On");
+            } else {
+                this.log("Power off");
+            }
+        };
+
+        DashBoard.prototype.powerOff = function () {
+            this.power = false;
+            this.log("Car power is off.");
+        };
+
+        DashBoard.prototype.powerOn = function () {
+            this.power = true;
+            this.log("Car power is on");
+            this.statuses();
+        };
+
+        DashBoard.prototype.leftBlinker = function () {
+            if (this.power === true) {
+                this.log("your left blinker is on");
+            } else {
+                this.log("Car is off blinkers wont work");
+            }
+        };
+
+        DashBoard.prototype.rightBlinker = function () {
+            if (this.power === true) {
+                this.log("your right blinker is on");
+            } else {
+                this.log("Car is off blinkers wont work");
+            }
+        };
+
+        DashBoard.prototype.emergencyLights = function () {
+            this.log(
+                "you turn your emergency lights on, which work regardless if car is on or off"
+            );
+        };
+
+        DashBoard.prototype.headLights = function () {
+            if (this.power === true) {
+                this.log("your lights are so bright they are blinding on coming traffic");
+            } else {
+                this.log(
+                    "there is no power for those Xenon headlights you got (thankfully)"
+                );
+            }
+        };
+
+        DashBoard.prototype.wiper = function () {
+            if (this.statusOfWiper === true) {
+                this.wiperOn();
+            } else {
+                this.wiperOff();
+            }
+        };
+
+        DashBoard.prototype.wiperOn = function () {
+            if (this.power === true) {
+                this.statusOfWiper = true;
+                this.log("your wipers are on");
+            } else {
+                this.log("no power wipers cannot turn on");
+            }
+        };
+
+        DashBoard.prototype.wiperOff = function () {
+            if (this.power === true) {
+                this.statusOfWiper = false;
+                this.log("your wipers are off");
+            } else {
+                this.log("no power so wipers cant work anyway");
+            }
+        };
+
+        DashBoard.prototype.getIndexGears = function (whichGear) {
+            var foundIndex = null;
+
+            for (var g = 0; g < this.Gears.length; g++) {
+                var gear = this.Gears[g];
+                if (gear === whichGear) {
+                    foundIndex = g;
+                    break;
+                }
+            }
+            return foundIndex;
+        };
+
+        DashBoard.prototype.printGears = function () {
+            this.log("-----------the Gears are below:--------");
+            for (var g = 0; g < this.Gears.length; g++) {
+                var gear = this.Gears[g];
+                this.log(gear);
+            }
+        };
+/*
+        DashBoard.prototype.printStations = function () {
+            this.log("-----------the Radio Stations are below:--------");
+            for (var s = 0; s < this.stations.length; s++) {
+                var station = this.stations[s];
+                this.log(station);
+            }
+        };
+*/
+        DashBoard.prototype.turnRadioOn = function () {
+            if (this.power === true) {
+                this.radioStatus = true;
+                this.log("Radio is on.");
+            } else {
+                this.log("no power so cannot turn on radio");
+            }
+        };
+
+        DashBoard.prototype.turnRadioOff = function () {
+            if (this.power === true) {
+                this.radioStatus = false;
+                this.log("Radio is off.");
+            } else {
+                this.log("no power so radio is off anyway");
+            }
+        };
+
+        DashBoard.prototype.radio = function () {
+            if (this.radioStatus === true) {
+                this.turnRadioOn();
+                this.tuneStation(this.currentStation);
+            } else {
+                this.turnRadioOff();
+            }
+        };
+
+        DashBoard.prototype.addStation = function (newStation) {
+            this.stations.push(newStation);
+        };
+
+        DashBoard.prototype.anyStation = function (stationNum) {
+            var stationExist = false;
+            for (var i = 0; i < this.stations.length; i++) {
+                var station = this.stations[i];
+                if (stationNum === station) {
+                    stationExist = true;
+                    break;
+                }
+            }
+            return stationExist;
+        };
+
+        DashBoard.prototype.anyFavStation = function (stationNum) {
+            var stationExist = false;
+            for (var i = 0; i < this.favorites.length; i++) {
+                var station = this.favorites[i];
+                if (stationNum === station) {
+                    stationExist = true;
+                    break;
+                }
+            }
+            return stationExist;
+        };
+        //------------------
+
+        DashBoard.prototype.seekStation = function () {
+            for (var i = 0; i < this.stations.length; i++) {
+                var station = this.stations[i];
+                this.tuneStation(station);
+                //this.log("you are tuned into " + station);
+            }
+        };
+
+        DashBoard.prototype.tuneStation = function (stationNum) {
+            if (this.radioStatus === false && this.power === false) {
+                this.log("Can't Tune in, Radio Power and car power is off");
+                return;
+            }
+            if (this.radioStatus === false && this.power === true) {
+                this.log("Car is on, but you can't tune in because Radio is off");
+                return;
+            }
+            var stationExist = this.anyStation(stationNum);
+
+            if (stationExist === true) {
+                this.currentStation = stationNum;
+                this.log("you are tuned to " + stationNum);
+            } else {
+                this.log(stationNum + " not found");
+            }
+        };
+
+        DashBoard.prototype.volumeIncrease = function (volume) {
+            if (this.power === true && this.radioStatus === true) {
+                var temp = this.currentVolume + volume;
+                if (temp >= 10) {
+                    this.currentVolume = 10;
+                } else {
+                    this.currentVolume = temp;
+                }
+                this.log("volume is now " + this.currentVolume);
+            } else {
+                this.log("How you gonna set the volume with no power?");
+            }
+            /*if (power === false) {
+              log("How you gonna set the volume with no power?");
+            } else {
+              if (radioStatus === true) {
+                var temp = currentVolume + volume;
+                if (temp >= 10) {
+                  currentVolume = 10;
+                } else {
+                  currentVolume = temp;
+                }
+                log("volume is now " + currentVolume);
+              }else{
+                log("Power is on, but radio is off");
+              }
+            }*/
+        };
+
+        DashBoard.prototype.volumeDecrease = function (volume) {
+            if (this.power === false) {
+                this.log("How you gonna set the volume with no power?");
+            } else {
+                var temp = this.currentVolume - volume;
+                if (temp <= 0) {
+                    this.currentVolume = 0;
+                } else {
+                    this.currentVolume = temp;
+                }
+                this.log("volume is now " + this.currentVolume);
+            }
+        };
+
+        DashBoard.prototype.heat = function () {
+            if (this.statusOfHeat === true) {
+                this.heatOn();
+            } else {
+                this.heatOff();
+            }
+        };
+
+        DashBoard.prototype.heatOn = function () {
+            if (this.power === true) {
+                this.ACOff();
+                this.statusOfHeat = true;
+                this.log("Heater is on, warming up car.");
+            } else {
+                this.log("no power cannot turn on heat.");
+            }
+        };
+
+        DashBoard.prototype.heatOff = function () {
+            if (this.power === true) {
+                this.statusOfHeat = false;
+                this.log("Heater is off.");
+            } else {
+                this.log("Power is off anyway so heater is off");
+            }
+        };
+
+        DashBoard.prototype.ACOn = function () {
+            if (this.power === true) {
+                this.heatOff();
+                this.statusOfAC = true;
+                this.log("A/C is now on, take a chill pill.");
+            } else {
+                this.log("no power so A/C cannot turn on.");
+            }
+        };
+
+        DashBoard.prototype.ACOff = function () {
+            if (this.power === true) {
+                this.statusOfAC = false;
+                this.log("A/C is off.");
+            } else {
+                this.log("no power so A/C is off anyway.");
+            }
+        };
+
+        DashBoard.prototype.AC = function () {
+            if (this.statusOfAC === true) {
+                this.ACOn();
+            } else {
+                this.ACOff();
+            }
+        };
+
+        DashBoard.prototype.printVents = function () {
+            this.log("-----------the Vents are below:--------");
+            for (var v = 0; v < this.Vents.length; v++) {
+                var vent = this.Vents[v];
+                this.log(vent);
+            }
+        };
+
+        DashBoard.prototype.ventCheck = function (selection) {
+            var ventExist = false;
+
+            for (var v = 0; v < this.Vents.length; v++) {
+                var vent = this.Vents[v];
+                if (selection === vent) {
+                    ventExist = true;
+                    break;
+                }
+            }
+            return ventExist;
+        };
+
+        DashBoard.prototype.setVent = function (selection) {
+            if (this.power === true) {
+                if (this.statusOfAC === true && this.statusOfHeat === true) {
+                    this.log("Cannot set vent, both A/C and Heat cannot be on.");
+                    return;
+                }
+                if (this.statusOfAC === false && this.statusOfHeat === false) {
+                    this.log("Setting vent but Neither A/C or Heat is on.");
+                }
+                var valid = this.ventCheck(selection);
+                if (valid === true) {
+                    this.currentVent = selection;
+                    this.log("vent is set to " + this.currentVent);
+                } else {
+                    this.log("Not a valid vent selection.");
+                }
+            } else {
+                this.log("no power unable to set vent.");
+            }
+        };
+
+        DashBoard.prototype.vent = function () {
+            this.setVent(this.currentVent);
+        };
+
+        DashBoard.prototype.gearExists = function (whichGear) {
+            var gearExist = false;
+            for (let g = 0; g < this.Gears.length; g++) {
+                var gear = this.Gears[g];
+                if (gear === whichGear) {
+                    // with each gear, comparing to one i wanna match (which gear)
+                    gearExist = true;
+                    break; // to get out of the loop if a match is found
+                }
+            }
+            return gearExist;
+        };
+
+        DashBoard.prototype.gear = function () {
+            if (this.currentGear === "Park") {
+                this.log("you are good to go");
+            } else {
+                this.log("slow down bucko you aren't in the right gear");
+                this.currentGear = "Park";
+                this.log("Shifting to park, you may now continue.");
+            }
+        };
+
+        DashBoard.prototype.shiftTest = function (whichGear) {
+            var shiftable = false;
+            var shiftToIndex = this.getIndexGears(whichGear);
+
+            if (shiftToIndex === null) {
+                return false;
+            }
+            var currentIndex = this.getIndexGears(this.currentGear);
+            var changeIndex = shiftToIndex - currentIndex; //if positive, shifting up, negative shifting down.
+            var isUp = changeIndex > 0;
+            var isDown = changeIndex < 0;
+            if (isUp === true) {
+                shiftable = changeIndex === 1;
+            } else if (isDown === true) {
+                shiftable = changeIndex === -1;
+            }
+
+            return shiftable;
+        };
+
+        DashBoard.prototype.setGear = function (whichGear) {
+            var gearExist = this.gearExists(whichGear);
+            if (this.power === true && this.engineStatus === true && gearExist === true) {
+                var shiftable = this.shiftTest(whichGear);
+                if (shiftable === true) {
+                    this.currentGear = whichGear;
+                    this.log("Shifting into " + whichGear);
+                } else {
+                    this.log("not shiftable");
+                }
+            } else {
+                if (this.power === false) {
+                    this.log("you have NO POWER you can't shift!");
+                } else if (this.engineStatus === false) {
+                    this.log("Your engine isn't on how you gonna shift?!");
+                } else if (gearExist === false) {
+                    this.log("That gear doesnt exist");
+                } else {
+                    this.log("somethings wrong with your car bro.");
+                }
+            }
+        };
+
+        DashBoard.prototype.engineOn = function () {
+            if (this.power === true) {
+                this.engineStatus = true;
+                this.log("Cranking Engine... Engine on");
+            } else {
+                this.log("no power so cannot start engine");
+            }
+        };
+
+        DashBoard.prototype.engineStop = function () {
+            if (this.power === false) {
+                this.engineStatus = false;
+                this.log("No Power so engine is already off.");
+            } else {
+                this.log("Engine is off");
+            }
+        };
+
+        DashBoard.prototype.engineMiles = function (Miles) {
+            if (this.engineStatus === true) {
+                //var mile = milesOnEngine;
+                this.milesOnEngine = this.milesOnEngine + Miles;
+                this.log("miles on engine are now " + this.milesOnEngine);
+            }
+        };
+
+        DashBoard.prototype.drive = function (milesToDrive) {
+            if (this.power === true && this.engineStatus === true) {
+                this.engineMiles(milesToDrive);
+            }
+        };
+
+        DashBoard.prototype.turnKey = function () {
+            this.powerOn();
+            this.radio();
+            this.printFavorites();
+            this.wiper();
+            this.vent();
+            this.heat();
+            this.AC();
+            this.engineOn();
+            this.gear();
+            //this.printRadioStations();
+        };
+
+        DashBoard.prototype.turnKeyOff = function () {
+            this.engineStop();
+            this.powerOff();
+            //this.turnRadioOff();
+        };
+
+        DashBoard.prototype.statuses = function () {
+            this.log("current tuned radio station is " + this.currentStation);
+            this.log("Radio is " + this.onOrOff(this.radioStatus));
+            this.log("A/C is " + this.onOrOff(this.statusOfAC));
+            this.log("Heater is " + this.onOrOff(this.statusOfHeat));
+            this.log("wipers are " + this.onOrOff(this.statusOfWiper));
+            this.log("Engine is " + this.onOrOff(this.engineStatus));
+        };
+
+        DashBoard.prototype.onPowerOn = function () {
+            this.powerOn();
+            this.statuses();
+        };
+
+        DashBoard.prototype.onOrOff = function (status) {
+            var result = status === true ? "on" : "off";
+            return result;
+            //return (status === true) ? "on" : "off"
+        };
+
+        DashBoard.prototype.printFavorites = function () {
+            var thisDashBoard = this;
+            this.targetFavElement.innerHTML = "";
+            for (var f = 0; f < this.favorites.length; f++) {
+                var favs = this.favorites[f];
+                var button = document.createElement("button");
+                button.setAttribute("id", "favorite-" + f);
+                button.textContent = favs;
+                /*button.addEventListener("click", function () {
+                    thisDashBoard.tuneStation(favs)
+                });*/ assignStationEventHandler(favs, button, thisDashBoard);
+                this.targetFavElement.append(button);
+            }
+        };
+
+        DashBoard.prototype.printRadioStations = function () {
+            var thisDashBoard = this;
+            this.targetStations.innerHTML = "";
+            for (var f = 0; f < this.stations.length; f++) {
+                var station = this.stations[f];
+                var button = document.createElement("button");
+                button.setAttribute("id", "station-" + f);
+                button.textContent = station;
+                /*button.addEventListener("click", function () {
+                    var s = station;
+                    thisDashBoard.tuneStation(s)
+                });*/assignStationEventHandler(station, button, thisDashBoard);
+                this.targetStations.append(button);
+            }
+        };
+
+        DashBoard.prototype.addFavorites = function (currentStation) {
+            //var stationNum = this.currentStation;
+            var exists = this.anyFavStation(currentStation);
+            if (exists == false) {
+                this.favorites.push(currentStation);
+                this.log("Added " + currentStation + " to Favorites");
+                this.printFavorites();
+            }
+            return;
+        }
+
+
+
+        function Car(color, year, name, make, model) {
+            //var car = {};
+            //car.Name = name;
+            //car.Color = color;
+            //Car.Features = ["sunroof", "bluetooth radio", "navigation"];
+
+            //return car;
+            this.Name = name;
+            this.Color = color;
+            this.Make = make;
+            this.Model = model;
+            this.Year = year;
+            this.Features = ["sunroof", "bluetooth radio", "navigation"];
+            this.Dashboard = new DashBoard();
+        }
+
+        Car.prototype.getNameandColor = function () {
+            return this.Name + " " + this.Color;
+        };
+
+        Car.prototype.getInformation = function () {
+            return (
+                this.Color +
+                " " +
+                this.Year +
+                " " +
+                this.Name +
+                " " +
+                this.Make +
+                " " +
+                this.Model
+            );
+        };
+
+        Car.prototype.printFeatures = function () {
+            for (var f = 0; f < this.Features.length; f++) {
+                var feature = this.Features[f];
+                console.log(feature);
+            }
+        };
+
+        Car.prototype.addFeature = function (feature) {
+            this.Features.push(feature);
+        };
+
+        var buttonAssignment = function (Id, Action, functionCall, logFunction) {
+            var Identity = document.getElementById(Id);
+            if (Identity !== null) {
+                Identity.addEventListener(Action, function () {
+                    functionCall();
+                });
+            } else logFunction("ERROR");
+        };
+
+        var lexus = new Car();
+        lexus.Dashboard.display = document.getElementById("display");
+        lexus.Dashboard.targetFavElement = document.getElementById("radioFavorites");
+        lexus.Dashboard.targetStations = document.getElementById("stations");
+        lexus.Dashboard.printRadioStations();
+        lexus.Dashboard.printFavorites();
+        changeStationFavButton(lexus.Dashboard.currentStation);
+        //var stations = lexus.Dashboard.stations;
+/*
+        for (var f = 0; f < stations.length; f++) {
+                var station = stations[f];
+                var button = document.createElement("button");
+                button.setAttribute("id", "station-" + f);
+                button.textContent = station;
+                button.addEventListener("click", function () {
+                    lexus.Dashboard.tuneStation(station)
+                });
+                document.getElementById("stations").append(button);
+            }
+*/
+        document.getElementById("turnKeyOn").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.turnKey();
+            },
+            lexus.log
+        );
+
+        document.getElementById("turnKeyOff").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.turnKeyOff();
+            },
+            lexus.log
+        );
+
+        document.getElementById("carPowerOffButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.powerOff();
+            },
+            lexus.log
+        );
+
+        document.getElementById("carPowerOnButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.powerOn();
+            },
+            lexus.log
+        );
+
+        document.getElementById("carEngineOffButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.engineStop();
+            },
+            lexus.log
+        );
+
+        document.getElementById("carEngineOnButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.engineOn();
+            },
+            lexus.log
+        );
+
+        document.getElementById("headVentButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setVent("Head");
+            },
+            lexus.log
+        );
+
+        document.getElementById("legVentButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setVent("Legs");
+            },
+            lexus.log
+        );
+
+        document.getElementById("defrostVentButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setVent("Defrost");
+            },
+            lexus.log
+        );
+
+        document.getElementById("headAndLegsVentButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setVent("Head and Legs");
+            },
+            lexus.log
+        );
+
+        document.getElementById("offVentButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setVent("Off");
+            },
+            lexus.log
+        );
+
+        document.getElementById("wiperOnButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.wiperOn();
+            },
+            lexus.log
+        );
+
+        document.getElementById("wiperOffButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.wiperOff();
+            },
+            lexus.log
+        );
+
+        document.getElementById("A-COnButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.ACOn();
+            },
+            lexus.log
+        );
+
+        document.getElementById("A-COffButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.ACOff();
+            },
+            lexus.log
+        );
+
+        document.getElementById("heatOnButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.heatOn();
+            },
+            lexus.log
+        );
+
+        document.getElementById("heatOffButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.heatOff();
+            },
+            lexus.log
+        );
+
+        document.getElementById("radioOnButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.turnRadioOn();
+            },
+            lexus.log
+        );
+
+        document.getElementById("radioOffButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.turnRadioOff();
+            },
+            lexus.log
+        );
+
+        document.getElementById("radioVolumeUpButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.volumeIncrease(1);
+            },
+            lexus.log
+        );
+
+        document.getElementById("radioVolumeDownButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.volumeDecrease(1);
+            },
+            lexus.log
+        );
+
+
+        document.getElementById("leftBlinkerButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.leftBlinker();
+            },
+            lexus.log
+        );
+
+        document.getElementById("rightBlinkerButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.rightBlinker();
+            },
+            lexus.log
+        );
+
+        document.getElementById("emergencyLightsButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.emergencyLights();
+            },
+            lexus.log
+        );
+
+        document.getElementById("headlightsButton").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.headLights();
+            },
+            lexus.log
+        );
+
+        document.getElementById("P").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setGear("Park");
+            },
+            lexus.log
+        );
+
+        document.getElementById("N").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setGear("Neutral");
+            },
+            lexus.log
+        );
+
+        document.getElementById("first").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setGear("First");
+            },
+            lexus.log
+        );
+
+        document.getElementById("second").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setGear("Second");
+            },
+            lexus.log
+        );
+
+        document.getElementById("third").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setGear("Third");
+            },
+            lexus.log
+        );
+
+        document.getElementById("fourth").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setGear("Fourth");
+            },
+            lexus.log
+        );
+
+        document.getElementById("fifth").addEventListener(
+            "click",
+            function () {
+                lexus.Dashboard.setGear("Fifth");
+            },
+            lexus.log
+        );
+
+        document.getElementById("addToFavorite")
+            .addEventListener("click", function () {
+
+                lexus.Dashboard.addFavorites(lexus.Dashboard.currentStation);
+            })
+    </script>
+</body>
+
+</html>

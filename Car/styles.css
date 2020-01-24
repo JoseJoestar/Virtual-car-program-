@@ -1,0 +1,13 @@
+body {
+    font-family: sans-serif;
+    background-color: brown;
+  }
+  
+  #display {
+    border: 5px solid black;
+    min-height: 20px;
+    min-width: 100%;
+    max-height: 400px;
+    overflow-y: scroll;
+  }
+  
